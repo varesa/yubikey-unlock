@@ -1,6 +1,6 @@
 #!/bin/env python3
 
-from subprocess import check_output, CalledProcessError
+from subprocess import check_output, run, PIPE, CalledProcessError
 from time import sleep
 
 from conf import *
@@ -43,16 +43,13 @@ def unlock():
 	password = chalresp(CHALLENGE)
 	for device, disk in list(zip(DEVICES, DISKS)):
 		print("Unlocking " + device + " as " +  disk)
-		try:
-			print(check_output("echo -n " + password + " | cryptsetup luksOpen -d - " + device + " " + disk, shell=True).decode(), end='')
-		except CalledProcessError as err:
-			if err.returncode == 5:
-				pass  # Disk was already unlocked
-			else:
-				print(err.statuscode, err.output)
+		p = run(['cryptsetup', 'luksOpen', '-d', '-', device, disk], input=password, stdout=PIPE, encoding='ascii')
+		if p.returncode != 0 and p.returncode != 5:
+			raise Exception("LuksOpen return code: " + str(p.returncode))
 
 def try_mount():
-        if 'zfs' not in check_output('lsmod').decode():
+	if 'zfs' not in check_output('lsmod').decode():
+		print("Loading ZFS module")
 		check_output(['modprobe', 'zfs'])
 
 	missing = False
