@@ -1,0 +1,11 @@
+
+# Devices and disks must be paired (same order and equal amount)
+DEVICES = ["/dev/sdb1", "/dev/sdc1"]
+DISKS = ["ssd1_crypt", "ssd2_crypt"]
+
+# ZFS pools that should be mounted
+POOLS = ["ssd"]                      
+
+# Yubikey challenge                                                                                        
+CHALLENGE = "t34w0u9t4390yw384b9ytwb3tybgo938tygb938y"
+
