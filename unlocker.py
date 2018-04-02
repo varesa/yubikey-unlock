@@ -52,6 +52,9 @@ def unlock():
 				print(err.statuscode, err.output)
 
 def try_mount():
+        if 'zfs' not in check_output('lsmod').decode():
+		check_output(['modprobe', 'zfs'])
+
 	missing = False
 	for pool in POOLS:
 		if pool not in check_output(['zpool', 'list']).decode():
