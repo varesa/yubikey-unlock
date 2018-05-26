@@ -81,7 +81,7 @@ def main():
 				if not post_script_started:
 					print("Running post-script")
 					print(check_output(POST_SCRIPT_COMMAND))
-                    post_script_started = True
+					post_script_started = True
 				sleep(60 * 5)
 
 
