@@ -21,9 +21,9 @@ def disks_encrypted():
 	for disk in DISKS:
 		states.add(disk in lsblk)
 
-	if len(states) == 1:
+	if len(states) == 1:  # Uniform state
 		return UNENCRYPTED if states.pop() else ENCRYPTED
-	else:
+	else:                 # Mixed state
 		return MIXED
 
 
@@ -32,7 +32,7 @@ def chalresp(challenge):
 
 	if len(resp) != 40:
 		raise Exception("Invalid yubikey response")
-	
+
 	check_output("echo -e '\a' > /dev/console", shell=True)
 
 	print("Yubikey sent a valid response")
@@ -50,7 +50,7 @@ def unlock():
 def try_mount():
 	if 'zfs' not in check_output('lsmod').decode():
 		print("Loading ZFS module")
-		check_output(['modprobe', 'zfs'])
+		print(check_output(['modprobe', 'zfs']))
 
 	missing = False
 	for pool in POOLS:
@@ -63,6 +63,7 @@ def try_mount():
 
 
 def main():
+	post_script_started = False
 	while True:
 		if disks_encrypted() == ENCRYPTED or disks_encrypted() == MIXED:
 			print("Disks encrypted")
@@ -73,12 +74,16 @@ def main():
 			else:
 				print("Ubikey not found")
 				sleep(3)
-		
+
 		else:
 			if not try_mount():
 				print("Disks okay")
+				if not post_script_started:
+					print("Running post-script")
+					print(check_output(POST_SCRIPT_COMMAND))
+                    post_script_started = True
 				sleep(60 * 5)
-			
+
 
 
 if __name__ == "__main__":

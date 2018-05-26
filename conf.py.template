@@ -9,3 +9,5 @@ POOLS = ["ssd"]
 # Yubikey challenge                                                                                        
 CHALLENGE = "t34w0u9t4390yw384b9ytwb3tybgo938tygb938y"
 
+# Command to run after pools online
+POST_SCRIPT_COMMAND = [ "/bin/true" ]
